@@ -41,26 +41,26 @@ jobs:
           if [ -z "$TEAM_ID" ]; then
             TEAM_ID="YOUR_TEAM_ID"
           fi
-          cat > export_options.plist << EOF
-  <?xml version="1.0" encoding="UTF-8"?>
-  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-  <plist version="1.0">
-  <dict>
-      <key>method</key>
-      <string>development</string>
-      <key>teamID</key>
-      <string>$TEAM_ID</string>
-      <key>signingStyle</key>
-      <string>automatic</string>
-      <key>stripSwiftSymbols</key>
-      <true/>
-      <key>compileBitcode</key>
-      <false/>
-      <key>thinning</key>
-      <string><none></string>
-  </dict>
-  </plist>
-  EOF
+          cat > export_options.plist << 'PLIST_EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>method</key>
+    <string>development</string>
+    <key>teamID</key>
+    <string>'"$TEAM_ID"'</string>
+    <key>signingStyle</key>
+    <string>automatic</string>
+    <key>stripSwiftSymbols</key>
+    <true/>
+    <key>compileBitcode</key>
+    <false/>
+    <key>thinning</key>
+    <string><none></string>
+</dict>
+</plist>
+PLIST_EOF
           cat export_options.plist
 
       - name: Build iOS IPA
