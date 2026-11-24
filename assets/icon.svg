@@ -1,0 +1,36 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0066CC;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#004499;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="speaker" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E0E0E0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background rounded rect -->
+  <rect x="0" y="0" width="1024" height="1024" rx="224" fill="url(#bg)"/>
+
+  <!-- Speaker body -->
+  <g transform="translate(256, 200)">
+    <!-- Speaker box -->
+    <path d="M0 100 L180 100 L230 50 L230 574 L180 524 L0 524 Z" fill="url(#speaker)" stroke="#CCCCCC" stroke-width="4"/>
+
+    <!-- Speaker cone -->
+    <path d="M230 180 L400 100 L400 524 L230 444 Z" fill="url(#speaker)" stroke="#CCCCCC" stroke-width="4"/>
+
+    <!-- Sound waves -->
+    <g stroke="#0066CC" stroke-width="12" fill="none" stroke-linecap="round" opacity="0.8">
+      <path d="M320 280 Q380 220 440 280"/>
+      <path d="M320 340 Q400 250 480 340"/>
+      <path d="M320 400 Q380 460 440 400"/>
+      <path d="M320 460 Q400 530 480 460"/>
+    </g>
+
+    <!-- USB/Phone indicator -->
+    <rect x="60" y="560" width="90" height="160" rx="12" fill="#F0F0F0" stroke="#DDD" stroke-width="3"/>
+    <rect x="80" y="580" width="50" height="120" rx="6" fill="#333"/>
+    <circle cx="105" cy="700" r="8" fill="#0066CC"/>
+  </g>
+</svg>

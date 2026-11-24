@@ -1,0 +1,99 @@
+name: Build iOS App
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      team_id:
+        description: 'Apple Developer Team ID (10 chars, optional for unsigned)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  build-ios:
+    name: Build iOS IPA
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Configure iOS signing
+        run: |
+          # Create export options with team ID if provided
+          TEAM_ID="${{ github.event.inputs.team_id }}"
+          if [ -z "$TEAM_ID" ]; then
+            TEAM_ID="YOUR_TEAM_ID"
+          fi
+          cat > export_options.plist << EOF
+  <?xml version="1.0" encoding="UTF-8"?>
+  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+  <plist version="1.0">
+  <dict>
+      <key>method</key>
+      <string>development</string>
+      <key>teamID</key>
+      <string>$TEAM_ID</string>
+      <key>signingStyle</key>
+      <string>automatic</string>
+      <key>stripSwiftSymbols</key>
+      <true/>
+      <key>compileBitcode</key>
+      <false/>
+      <key>thinning</key>
+      <string><none></string>
+  </dict>
+  </plist>
+  EOF
+          cat export_options.plist
+
+      - name: Build iOS IPA
+        run: |
+          flutter build ipa --export-options-plist=export_options.plist --no-tree-shake-icons
+
+      - name: Verify IPA
+        run: |
+          ls -la build/ios/ipa/
+          file build/ios/ipa/*.ipa
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pc-speaker-ipa
+          path: build/ios/ipa/*.ipa
+          retention-days: 30
+
+      - name: Create Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/ios/ipa/*.ipa
+          generate_release_notes: true
+          tag_name: ${{ github.ref_name }}
+          name: PC Speaker ${{ github.ref_name }}
+
+      - name: Upload to Release (manual trigger with team_id)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.team_id != ''
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/ios/ipa/*.ipa
+          tag_name: "nightly-${{ github.run_number }}"
+          name: "PC Speaker Nightly Build"
+          draft: true
+          prerelease: true
